@@ -136,7 +136,7 @@ def main():
     parser.add_argument(
         "--vae-ckpt",
         type=str,
-        default="stable_diffusion/models/ldm/stable-diffusion-v1/vae-ft-mse-840000-ema-pruned.ckpt",
+        default=None,
         help="Path to vae checkpoint.",
     )
     parser.add_argument(
@@ -220,7 +220,7 @@ def main():
     model = load_model_from_config(
         OmegaConf.load("stable_diffusion/configs/stable-diffusion/v1-inference.yaml"),
         ckpt=opt.ckpt,
-        vae_ckpt=opt.vae_ckpt,
+        #vae_ckpt=opt.vae_ckpt,
     )
     model.cuda().eval()
     model_wrap = k_diffusion.external.CompVisDenoiser(model)
@@ -247,7 +247,7 @@ def main():
             with open(prompt_dir.joinpath("prompt.json"), "w") as fp:
                 json.dump(prompt, fp)
 
-            cond = model.get_learned_conditioning([prompt["caption"], prompt["output"]])
+            cond = model.get_learned_conditioning([prompt["input"], prompt["output"]])
             results = {}
 
             with tqdm(total=opt.n_samples, desc="Samples") as progress_bar:
@@ -273,7 +273,7 @@ def main():
                     x1 = x_samples_ddim[1]
 
                     clip_sim_0, clip_sim_1, clip_sim_dir, clip_sim_image = clip_similarity(
-                        x0[None], x1[None], [prompt["caption"]], [prompt["output"]]
+                        x0[None], x1[None], [prompt["input"]], [prompt["output"]]
                     )
 
                     results[seed] = dict(

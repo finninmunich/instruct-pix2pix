@@ -1,0 +1,12 @@
+=0.7.5
+=0.73.1
+ViT-L-14.pt
+checkpoints/
+data/
+imgs/
+*__pycache__*
+openai/
+prompts/
+src/
+*.DS_Store
+*.idea/

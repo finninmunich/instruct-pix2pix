@@ -1,0 +1,28 @@
+evening_results:
+  steps: 100
+  resolution: 1080
+  seed: 1371
+  cfg-text: 5
+  cfg-image: 1.5
+  edit: "Turn it into a dark inky night with low illumination"
+dark_scenes:
+  steps: 100
+  resolution: 1080
+  seed: 1371
+  cfg-text: [7.5,5,3.5]
+  cfg-image: 1.5
+  edit: "Turn it into a dark inky night with low illumination"
+deep_midnight:
+  steps: 100
+  resolution: 1080
+  seed: 1371
+  cfg-text: [7.5,5,3.5]
+  cfg-image: 1.5
+  edit: "Turn it into deep midnight with extremely low illumination"
+NightMoreLight_darker:
+  steps: 100
+  resolution: 1080
+  seed: 1371
+  cfg-text: 9.5
+  cfg-image: 1.5
+  edit: "make it darker with low illumination"
