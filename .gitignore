@@ -10,3 +10,4 @@ prompts/
 src/
 *.DS_Store
 *.idea/
+*experiments/*

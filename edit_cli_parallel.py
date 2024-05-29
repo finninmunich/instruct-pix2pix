@@ -142,16 +142,15 @@ def running_instructp2p(input_path: str, output_path: str, resolution: int,
 
 
 if __name__ == '__main__':
-    torch.cuda.set_device(1)
     parser = ArgumentParser()
     parser.add_argument('--steps', type=int, default=100, help='Number of editing steps')
     parser.add_argument('--resolution', type=int, default=1080, help='Resolution of the output image')
     parser.add_argument('--seed', type=int, default=1371, help='Random seed')
     parser.add_argument('--cfg-text', type=float, default=5, help='Text configuration')
     parser.add_argument('--cfg-image', type=float, default=1.5, help='Image configuration')
-    parser.add_argument('--output-folder', type=str, default='./imgs/jidu/presentation_edited',
+    parser.add_argument('--output-folder', type=str, default='./imgs/jidu/insp2p-sunny-testing/v9_sunny2riany',
                         help='output image file path')
-    parser.add_argument('--data-folder', type=str, default='./imgs/jidu/presentation', help='source image file path')
+    parser.add_argument('--data-folder', type=str, default='./imgs/jidu/insp2p-sunny-testing', help='source image file path')
     parser.add_argument('--edit', type=str, default="make it darker",
                         help='Edit description')
     parser.add_argument("--config", default="configs/generate.yaml", type=str)
@@ -187,13 +186,12 @@ if __name__ == '__main__':
     sampler = "sample_dpm_2"
     # image_files = ["00000.png", "00076.png", "00238.png", "00265.png", "00392.png"]
     # image_files = ["00076.png"]
-    prompt_lists = ["make this photo in a style of Van Gogh"]
-    text_img_combinations = [(7, 1.5), (8, 1.5), (10, 1.5)]
+    prompt_lists = ["Transform sunny moments into rainy night moments"]
+    #text_img_combinations = [(7, 1.5), (8, 1.5), (10, 1.5)]
+    text_img_combinations = [(8, 1.5)]
     print(f"using text-img-combinations! the parameters passed to argparse are ignored!")
     for text_img_combination in text_img_combinations:
         for i, image_file in enumerate(image_files):
-            if image_file == "robocar01.png":
-                continue
             input_path = os.path.join(args.data_folder, image_file)
             output_path = os.path.join(output_folder_path, image_file)
             for prompt in prompt_lists:

@@ -7,9 +7,9 @@ import k_diffusion
 import numpy as np
 import torch
 import torch.nn as nn
+from PIL import Image
 from einops import rearrange, repeat
 from omegaconf import OmegaConf
-from PIL import Image
 from pytorch_lightning import seed_everything
 from tqdm import tqdm
 
@@ -42,8 +42,8 @@ def to_d(x, sigma, denoised):
 def get_ancestral_step(sigma_from, sigma_to):
     """Calculates the noise level (sigma_down) to step down to and the amount
     of noise to add (sigma_up) when doing an ancestral sampling step."""
-    sigma_up = min(sigma_to, (sigma_to**2 * (sigma_from**2 - sigma_to**2) / sigma_from**2) ** 0.5)
-    sigma_down = (sigma_to**2 - sigma_up**2) ** 0.5
+    sigma_up = min(sigma_to, (sigma_to ** 2 * (sigma_from ** 2 - sigma_to ** 2) / sigma_from ** 2) ** 0.5)
+    sigma_down = (sigma_to ** 2 - sigma_up ** 2) ** 0.5
     return sigma_down, sigma_up
 
 
@@ -80,7 +80,7 @@ def load_model_from_config(config, ckpt, vae_ckpt=None, verbose=False):
         print(f"Loading VAE from {vae_ckpt}")
         vae_sd = torch.load(vae_ckpt, map_location="cpu")["state_dict"]
         sd = {
-            k: vae_sd[k[len("first_stage_model.") :]] if k.startswith("first_stage_model.") else v
+            k: vae_sd[k[len("first_stage_model."):]] if k.startswith("first_stage_model.") else v
             for k, v in sd.items()
         }
     model = instantiate_from_config(config.model)
@@ -211,6 +211,7 @@ def main():
         default=0.7,
         help="CLIP threshold for image-image similarity.",
     )
+    parser.add_argument("--n-prompts", type=int, default=None, help="Number of prompts to generate")
     opt = parser.parse_args()
 
     global_seed = torch.randint(1 << 32, ()).item()
@@ -220,7 +221,7 @@ def main():
     model = load_model_from_config(
         OmegaConf.load("stable_diffusion/configs/stable-diffusion/v1-inference.yaml"),
         ckpt=opt.ckpt,
-        #vae_ckpt=opt.vae_ckpt,
+        # vae_ckpt=opt.vae_ckpt,
     )
     model.cuda().eval()
     model_wrap = k_diffusion.external.CompVisDenoiser(model)
@@ -232,6 +233,8 @@ def main():
 
     with open(opt.prompts_file) as fp:
         prompts = [json.loads(line) for line in fp]
+    if opt.n_prompts != None:
+        prompts = prompts[:opt.n_prompts]
 
     print(f"Partition index {opt.partition} ({opt.partition + 1} / {opt.n_partitions})")
     prompts = np.array_split(list(enumerate(prompts)), opt.n_partitions)[opt.partition]
@@ -294,9 +297,9 @@ def main():
                 (result["clip_sim_dir"], seed)
                 for seed, result in results.items()
                 if result["clip_sim_image"] >= opt.clip_img_threshold
-                and result["clip_sim_dir"] >= opt.clip_dir_threshold
-                and result["clip_sim_0"] >= opt.clip_threshold
-                and result["clip_sim_1"] >= opt.clip_threshold
+                   and result["clip_sim_dir"] >= opt.clip_dir_threshold
+                   and result["clip_sim_0"] >= opt.clip_threshold
+                   and result["clip_sim_1"] >= opt.clip_threshold
             ]
             metadata.sort(reverse=True)
             for _, seed in metadata[: opt.max_out_samples]:
